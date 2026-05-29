@@ -1,7 +1,6 @@
 // --- アプリのグローバル状態（ステート） ---
 const STORAGE_PREFIX = "fishQuizV2_";
 
-// ★ 修正・追加：ご提示いただいた「仲間で選ぶ」用の独自マスタ定義の完全版
 const GROUP_MASTER_DEF = {
     "魚": ["ベラ科", "ハゼ科", "スズメダイ科", "チョウチョウウオ科", "テンジクダイ科", "イソギンポ科", "ハタ亜科", "ニザダイ科", "フサカサゴ科", "フエダイ科", "キンチャクダイ科", "アジ科", "ハナダイ亜科", "イットウダイ科", "フグ科", "ヨウジウオ科", "カワハギ科", "モンガラカワハギ科", "ウツボ科", "フエフキダイ科", "ヒメジ科", "ゴンベ科", "ネズッポ科", "トラギス科", "アイゴ科", "イトヨリダイ科", "カエルアンコウ科", "エソ科", "オクスデルケス科", "ヘビギンポ科", "イサキ科", "サバ科", "ウミヘビ科", "オニオコゼ科", "カマス科", "ハコフグ科", "アナゴ科", "コチ科", "ウバウオ科", "アカエイ科", "キツネアマダイ科", "ウラナイカジカ科", "ササウシノシタ科", "コケギンポ科", "ハリセンボン科", "マンジュウダイ科", "メジロザメ科", "ハタンポ科", "タナバタウオ科", "ヒラメ科", "エボシダイ科", "メジナ科", "ホウボウ科", "ハナスズキ科", "キントキダイ科", "ベラギンポ科", "ダルマガレイ科", "ヘコアユ科", "メギス科", "ボラ科", "タカノハダイ科", "イスズミ科", "ヤガラ科", "ヌノサラシ亜科", "アンコウ科", "イシダイ科", "ウミテング科", "ウシノシタ科", "ダツ科", "イトマキエイ科", "タイ科", "カレイ科", "ミシマオコゼ科", "アイナメ科", "アカグツ科", "シュモクザメ科", "イタチウオ科", "イボダイ科", "ウチワザメ科", "オオセ科", "コモリザメ科", "ウミタナゴ科", "カゴカキダイ科", "カスザメ科", "カミソリウオ科", "キビナゴ科", "ユゴイ科", "クロサギ科", "シマイサキ科", "コバンザメ科", "サカタザメ科", "サバヒー科", "シビレエイ科", "キス科", "シロワニ科", "ジンベエザメ科", "クサウオ科", "セミホウボウ科", "サヨリ科", "タカベ亜科", "ダンゴウオ科", "ツノダシ科", "カワビシャ科", "ドチザメ科", "トビウオ科", "トビエイ科", "トラフザメ科", "トラザメ科", "オナガザメ科", "ネコザメ科", "ヒメ科", "ヒメツバメウオ科", "ヒラタエイ科", "ヘラヤガラ科", "ホタテエソ科", "フサアンコウ科", "マイワシ科", "タナゴ亜科", "マダラトビエイ科", "マツカサウオ科", "マツダイ科", "マトウダイ科", "マンボウ科", "ムツ科", "アゴアマダイ科"],
     "魚以外": ["テナガエビ科", "マイルカ科", "イロウミウシ科", "コブラ科", "ナガスクジラ科", "コウイカ科", "マダコ科", "ウミガメ科", "ヨツスジミノウミウシ科", "フジタウミウシ科", "ヤリイカ科", "イボウミウシ科", "チドリミドリガイ科", "ミドリイシ科", "クモガニ科", "Epialtidae", "カラッパ科", "ハタゴイソギンチャク科", "アメフラシ科", "セミクジラ科", "イッカク科", "ネズミイルカ科", "ダンゴイカ科", "アカイカ科", "サメハダホウズキイカ科", "モエビ科", "イセエビ科", "セミエビ科", "オウギガニ科", "ガザミ／ワタリガニ科", "サンゴガニ科", "カニダマシ科", "ワラエビ科", "オキクラゲ科", "ギンカクラゲ科", "ビゼンクラゲ科", "カノコキセワタ科", "アシカ科", "アカヒトデ科", "コブヒトデ科", "ナガウニ科", "ラッパウニ科", "クロナマコ科", "シカクナマコ科", "ザルガイ科", "ハナサンゴ科", "サザナミサンゴ科", "ミツバウツギ科", "マッコウクジラ科", "コククジラ科", "アカボウクジラ科", "ヒメイカ科", "ホタルイカモドキ科", "ソデイカ科", "ユウレイイカ科", "ダイオウイカ科", "オトヒメエビ科", "ヒメサンゴモエビ科", "ヒゲナガモエビ科", "Chlorotocellidae", "サラサエビ科", "カイカムリ科", "ミズヒキガニ科", "ケブカガニ科", "キンセンガニ科", "アサヒガニ科", "トゲアシガニ科", "ヒシガニ科", "ショウジンガニ科", "スナガニ科", "ミズクラゲ科", "タコクラゲ科", "ハナガサクラゲ科", "サカサクラゲ科", "アンドンクラゲ科", "ネッタイアンドンクラゲ科", "カツオノエボシ科", "オワンクラゲ科", "ウリクラゲ科", "カブトクラゲ科", "ユウレイクラゲ科", "オビクラゲ科", "マツバクラゲ科", "テマリクラゲ科", "ミズダコ科", "ムラサキダコ科", "アオイガイ科", "オサガメ科", "Cadlinellidae", "ツヅレウミウシ科", "クロシタナシウミウシ科", "ニセツノヒラムシ科", "ジュゴン科", "アザラシ科", "オニヒトデ科", "ガンガゼ科", "ホラガイ科", "ソデボラ科", "ウミウサギガイ科", "タカラガイ科", "オウムガイ科", "カンザシゴカイ科", "ウミケムシ科", "イグアナ科", "ハナシャコ科", "トラフシャコ科", "ケヤリムシ科", "ミミガイ科", "サザエ科", "トウカムリ科", "イトマキヒトデ科", "ヒメヒトデ科", "タコノマクラ科", "アミジグサ科", "テッポウエビ科", "ウメボシイソギンチャク科", "マボヤ科", "ユウレイボヤ科", "ツツボヤ科", "ハマサンゴ科", "クサビライシ科", "オオトゲサンゴ科", "ヒラフキサンゴ科"],
@@ -49,7 +48,7 @@ let quizSecondsElapsed = 0;
 let currentQuizSettings = {};
 
 let currentDetailTab = 'order'; 
-let lastQuizTargetFishes = []; // ★追加：「同じ問題でもう一度」用にターゲット生物を保存
+let lastQuizTargetFishes = []; 
 
 // --- 1. アプリ初期化 ＆ データロード ---
 document.addEventListener("DOMContentLoaded", async () => {
@@ -152,6 +151,217 @@ function updateStorage() {
     localStorage.setItem(STORAGE_PREFIX + currentUser + "_wrongs", JSON.stringify(userWrongs));
     localStorage.setItem(STORAGE_PREFIX + currentUser + "_corrects", JSON.stringify(userCorrects));
     localStorage.setItem(STORAGE_PREFIX + currentUser + "_notToLearn", JSON.stringify(userNotToLearn));
+    localStorage.setItem(STORAGE_PREFIX + currentUser + "_logs", JSON.stringify(userLogs));
+    
+    generateCategoryMaster();
+}
+
+// --- 3. 分類マスタの動的生成 ---
+function generateCategoryMaster() {
+    const orderMap = new Map();
+    const familyMap = new Map();
+
+    fishMaster.forEach(f => {
+        if (userNotToLearn.includes(f.id)) return;
+
+        if (!familyMap.has(f.family_name)) {
+            familyMap.set(f.family_name, { name: f.family_name, count: 0 });
+        }
+        familyMap.get(f.family_name).count++;
+
+        if (!orderMap.has(f.order_name)) {
+            orderMap.set(f.order_name, { name: f.order_name, count: 0, families: new Set() });
+        }
+        orderMap.get(f.order_name).count++;
+        orderMap.get(f.order_name).families.add(f.family_name);
+    });
+
+    familyMaster = Array.from(familyMap.values());
+    orderMaster = Array.from(orderMap.values()).map(o => ({
+        name: o.name,
+        count: o.count,
+        families: Array.from(o.families)
+    }));
+
+    const searchSelect = document.getElementById("search-category-select");
+    searchSelect.innerHTML = `<option value="all">すべての分類</option>`;
+    const sortedFam = [...familyMaster].sort((a,b) => b.count - a.count);
+    sortedFam.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.name; opt.textContent = `${c.name} (${c.count}種)`;
+        searchSelect.appendChild(opt);
+    });
+}
+
+function updateDashboard() {
+    const activeCount = fishMaster.filter(f => !userNotToLearn.includes(f.id)).length;
+    document.getElementById("db-total-count").textContent = activeCount;
+    
+    const validCorrects = userCorrects.filter(id => !userNotToLearn.includes(id));
+    const validRemaining = activeCount - validCorrects.length;
+    
+    document.getElementById("db-correct-count").textContent = validCorrects.length;
+    document.getElementById("db-remaining-count").textContent = validRemaining;
+    
+    const pct = activeCount > 0 ? Math.floor((validCorrects.length / activeCount) * 100) : 0;
+    document.getElementById("db-progress-bar").style.width = pct + "%";
+    document.getElementById("db-progress-percent").textContent = pct + "%";
+
+    const logContainer = document.getElementById("db-log-container");
+    logContainer.innerHTML = "";
+    if (userLogs.length === 0) {
+        logContainer.innerHTML = `<p class="empty-log-text">まだチャレンジ履歴がありません。</p>`;
+    } else {
+        const recentLogs = [...userLogs].reverse().slice(0, 5);
+        recentLogs.forEach(log => {
+            const row = document.createElement("div"); row.className = "log-row";
+            const dateStr = new Date(log.date).toLocaleDateString('ja-JP', {month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+            row.innerHTML = `
+                <div class="log-info">
+                    <span class="log-date">${dateStr}</span>
+                    <span class="log-type">${log.settings.type} / ${log.settings.difficulty}</span>
+                </div>
+                <div class="log-score ${log.score === log.total ? 'perfect' : ''}">${log.score} / ${log.total}</div>
+            `;
+            logContainer.appendChild(row);
+        });
+    }
+}
+
+function showDashboardDetail(isTabClick = false) {
+    if (currentDetailTab === 'order') {
+        document.getElementById("detail-tab-order").classList.add("active");
+        document.getElementById("detail-tab-group").classList.remove("active");
+    } else {
+        document.getElementById("detail-tab-group").classList.add("active");
+        document.getElementById("detail-tab-order").classList.remove("active");
+    }
+
+    const catStatsContainer = document.getElementById("detail-cat-stats-container");
+    catStatsContainer.innerHTML = "";
+
+    let catMap = new Map();
+    
+    if (currentDetailTab === 'order') {
+        fishMaster.forEach(f => {
+            if(userNotToLearn.includes(f.id)) return;
+            if(!catMap.has(f.order_name)) { catMap.set(f.order_name, { total: 0, correct: 0 }); }
+            catMap.get(f.order_name).total++;
+            if(userCorrects.includes(f.id)) catMap.get(f.order_name).correct++;
+        });
+    } else {
+        Object.keys(GROUP_MASTER_DEF).forEach(groupName => {
+            catMap.set(groupName, { total: 0, correct: 0 });
+        });
+        catMap.set("その他", { total: 0, correct: 0 });
+
+        fishMaster.forEach(f => {
+            if(userNotToLearn.includes(f.id)) return;
+            let foundGroup = false;
+            Object.entries(GROUP_MASTER_DEF).forEach(([gName, families]) => {
+                if(families.includes(f.family_name)) {
+                    catMap.get(gName).total++;
+                    if(userCorrects.includes(f.id)) catMap.get(gName).correct++;
+                    foundGroup = true;
+                }
+            });
+            if (!foundGroup) {
+                catMap.get("その他").total++;
+                if(userCorrects.includes(f.id)) catMap.get("その他").correct++;
+            }
+        });
+        
+        for (let [key, val] of catMap.entries()) {
+            if (val.total === 0) catMap.delete(key);
+        }
+    }
+
+    const sortedCats = Array.from(catMap.entries()).sort((a,b) => b[1].total - a[1].total);
+    sortedCats.forEach(([catName, stats]) => {
+        const pct = Math.floor((stats.correct / stats.total) * 100);
+        catStatsContainer.innerHTML += `
+            <div class="stat-row">
+                <div class="stat-row-label" title="${catName}">${catName}</div>
+                <div class="stat-row-bar-bg"><div class="stat-row-bar-fg" style="width: ${pct}%"></div></div>
+                <div class="stat-row-val">${stats.correct}/${stats.total}</div>
+                <div class="stat-row-pct">${pct}%</div>
+            </div>
+        `;
+    });
+
+    const logFullContainer = document.getElementById("detail-log-full-container");
+    logFullContainer.innerHTML = "";
+    if (userLogs.length === 0) {
+        logFullContainer.innerHTML = `<p class="empty-log-text">履歴がありません。</p>`;
+    } else {
+        [...userLogs].reverse().forEach(log => {
+            const dateStr = new Date(log.date).toLocaleString('ja-JP');
+            const categoriesText = log.settings.categories && log.settings.categories.length > 0 
+                ? log.settings.categories.join(", ") 
+                : "全範囲";
+
+            logFullContainer.innerHTML += `
+                <div class="detailed-log-card">
+                    <div class="dl-header"><span>${dateStr}</span> <span class="dl-type">${log.settings.type} / ${log.settings.difficulty}</span></div>
+                    <div class="dl-row"><span class="dl-label">スコア</span><span class="dl-value">${log.score} / ${log.total} (${Math.floor(log.score/log.total*100)}%)</span></div>
+                    <div class="dl-row"><span class="dl-label">所要時間</span><span class="dl-value">${formatTime(log.time)}</span></div>
+                    <div class="dl-row"><span class="dl-label">出題範囲</span><span class="dl-value" style="font-size:0.7rem; text-align:right; width:65%; word-break: break-all;">${categoriesText}</span></div>
+                </div>
+            `;
+        });
+    }
+
+    if (!isTabClick) {
+        navigateTo("db-detail-screen");
+    }
+}
+
+function renderCategories(sortKey, forceReset = false) {
+    const container = document.getElementById("category-list-container");
+    const viewMode = document.querySelector("input[name='cat-view-mode']:checked").value;
+    const famControls = document.getElementById("family-selection-control");
+    
+    if (!container) return;
+    container.innerHTML = "";
+
+    famControls.style.display = "flex";
+
+    if (viewMode === "family") {
+        let sortedFamilies = [...familyMaster];
+        if (sortKey === "count_rank") sortedFamilies.sort((a,b) => b.count - a.count);
+        if (sortKey === "abc") sortedFamilies.sort((a,b) => a.name.localeCompare(b.name, 'ja'));
+        
+        sortedFamilies.forEach(fam => {
+            const label = document.createElement("label"); label.className = "category-check-label";
+            label.innerHTML = `<input type="checkbox" name="category" value="${fam.name}" class="category-check" ${forceReset ? "checked" : ""}> ${fam.name} <span class="cat-count">(${fam.count}種)</span>`;
+            container.appendChild(label);
+        });
+    } else if (viewMode === "order") {
+        let sortedOrders = [...orderMaster];
+        if (sortKey === "count_rank") sortedOrders.sort((a,b) => b.count - a.count);
+        if (sortKey === "abc") sortedOrders.sort((a,b) => a.name.localeCompare(b.name, 'ja'));
+        
+        sortedOrders.forEach(ord => {
+            const wrapper = document.createElement("div"); wrapper.className = "accordion-item";
+            const header = document.createElement("button"); header.className = "accordion-header";
+            header.innerHTML = `<span class="acc-title">${ord.name} <span style="font-size:0.8rem; font-weight:normal;">(${ord.count}種)</span></span><span class="acc-icon">▼</span>`;
+            
+            const body = document.createElement("div"); body.className = "accordion-body"; body.style.display = forceReset ? "block" : "none";
+            
+            const famList = document.createElement("div"); famList.className = "acc-fam-list";
+            let sortedFamOfOrd = familyMaster.filter(f => ord.families.includes(f.name));
+            if (sortKey === "count_rank") sortedFamOfOrd.sort((a,b) => b.count - a.count);
+            if (sortKey === "abc") sortedFamOfOrd.sort((a,b) => a.name.localeCompare(b.name, 'ja'));
+            
+            sortedFamOfOrd.forEach(fam => {
+                const label = document.createElement("label"); label.className = "category-check-label";
+                label.innerHTML = `<input type="checkbox" name="category" value="${fam.name}" class="category-check" ${forceReset ? "checked" : ""}> ${fam.name} <span class="cat-count">(${fam.count}種)</span>`;
+                famList.appendChild(label);
+            });
+            body.appendChild(famList);
+            
+            header.onclick = () => {
+                cn", JSON.stringify(userNotToLearn));
     localStorage.setItem(STORAGE_PREFIX + currentUser + "_logs", JSON.stringify(userLogs));
     
     generateCategoryMaster();
