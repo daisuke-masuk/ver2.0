@@ -360,209 +360,6 @@ function renderCategories(sortKey, forceReset = false) {
             if (sortKey === "abc") sortedFamOfOrd.sort((a,b) => a.name.localeCompare(b.name, 'ja'));
             
             sortedFamOfOrd.forEach(fam => {
-                const label = document.createElement("label"); lPREFIX + currentUser + "_logs", JSON.stringify(userLogs));
-    
-    generateCategoryMaster();
-}
-
-// --- 3. 分類マスタの動的生成 ---
-function generateCategoryMaster() {
-    const orderMap = new Map();
-    const familyMap = new Map();
-
-    fishMaster.forEach(f => {
-        if (userNotToLearn.includes(f.id)) return;
-
-        if (!familyMap.has(f.family_name)) {
-            familyMap.set(f.family_name, { name: f.family_name, count: 0 });
-        }
-        familyMap.get(f.family_name).count++;
-
-        if (!orderMap.has(f.order_name)) {
-            orderMap.set(f.order_name, { name: f.order_name, count: 0, families: new Set() });
-        }
-        orderMap.get(f.order_name).count++;
-        orderMap.get(f.order_name).families.add(f.family_name);
-    });
-
-    familyMaster = Array.from(familyMap.values());
-    orderMaster = Array.from(orderMap.values()).map(o => ({
-        name: o.name,
-        count: o.count,
-        families: Array.from(o.families)
-    }));
-
-    const searchSelect = document.getElementById("search-category-select");
-    searchSelect.innerHTML = `<option value="all">すべての分類</option>`;
-    const sortedFam = [...familyMaster].sort((a,b) => b.count - a.count);
-    sortedFam.forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c.name; opt.textContent = `${c.name} (${c.count}種)`;
-        searchSelect.appendChild(opt);
-    });
-}
-
-function updateDashboard() {
-    const activeCount = fishMaster.filter(f => !userNotToLearn.includes(f.id)).length;
-    document.getElementById("db-total-count").textContent = activeCount;
-    
-    const validCorrects = userCorrects.filter(id => !userNotToLearn.includes(id));
-    const validRemaining = activeCount - validCorrects.length;
-    
-    document.getElementById("db-correct-count").textContent = validCorrects.length;
-    document.getElementById("db-remaining-count").textContent = validRemaining;
-    
-    const pct = activeCount > 0 ? Math.floor((validCorrects.length / activeCount) * 100) : 0;
-    document.getElementById("db-progress-bar").style.width = pct + "%";
-    document.getElementById("db-progress-percent").textContent = pct + "%";
-
-    const logContainer = document.getElementById("db-log-container");
-    logContainer.innerHTML = "";
-    if (userLogs.length === 0) {
-        logContainer.innerHTML = `<p class="empty-log-text">まだチャレンジ履歴がありません。</p>`;
-    } else {
-        const recentLogs = [...userLogs].reverse().slice(0, 5);
-        recentLogs.forEach(log => {
-            const row = document.createElement("div"); row.className = "log-row";
-            const dateStr = new Date(log.date).toLocaleDateString('ja-JP', {month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'});
-            row.innerHTML = `
-                <div class="log-info">
-                    <span class="log-date">${dateStr}</span>
-                    <span class="log-type">${log.settings.type} / ${log.settings.difficulty}</span>
-                </div>
-                <div class="log-score ${log.score === log.total ? 'perfect' : ''}">${log.score} / ${log.total}</div>
-            `;
-            logContainer.appendChild(row);
-        });
-    }
-}
-
-function showDashboardDetail(isTabClick = false) {
-    if (currentDetailTab === 'order') {
-        document.getElementById("detail-tab-order").classList.add("active");
-        document.getElementById("detail-tab-group").classList.remove("active");
-    } else {
-        document.getElementById("detail-tab-group").classList.add("active");
-        document.getElementById("detail-tab-order").classList.remove("active");
-    }
-
-    const catStatsContainer = document.getElementById("detail-cat-stats-container");
-    catStatsContainer.innerHTML = "";
-
-    let catMap = new Map();
-    
-    if (currentDetailTab === 'order') {
-        fishMaster.forEach(f => {
-            if(userNotToLearn.includes(f.id)) return;
-            if(!catMap.has(f.order_name)) { catMap.set(f.order_name, { total: 0, correct: 0 }); }
-            catMap.get(f.order_name).total++;
-            if(userCorrects.includes(f.id)) catMap.get(f.order_name).correct++;
-        });
-    } else {
-        Object.keys(GROUP_MASTER_DEF).forEach(groupName => {
-            catMap.set(groupName, { total: 0, correct: 0 });
-        });
-        catMap.set("その他", { total: 0, correct: 0 });
-
-        fishMaster.forEach(f => {
-            if(userNotToLearn.includes(f.id)) return;
-            let foundGroup = false;
-            Object.entries(GROUP_MASTER_DEF).forEach(([gName, families]) => {
-                if(families.includes(f.family_name)) {
-                    catMap.get(gName).total++;
-                    if(userCorrects.includes(f.id)) catMap.get(gName).correct++;
-                    foundGroup = true;
-                }
-            });
-            if (!foundGroup) {
-                catMap.get("その他").total++;
-                if(userCorrects.includes(f.id)) catMap.get("その他").correct++;
-            }
-        });
-        
-        for (let [key, val] of catMap.entries()) {
-            if (val.total === 0) catMap.delete(key);
-        }
-    }
-
-    const sortedCats = Array.from(catMap.entries()).sort((a,b) => b[1].total - a[1].total);
-    sortedCats.forEach(([catName, stats]) => {
-        const pct = Math.floor((stats.correct / stats.total) * 100);
-        catStatsContainer.innerHTML += `
-            <div class="stat-row">
-                <div class="stat-row-label" title="${catName}">${catName}</div>
-                <div class="stat-row-bar-bg"><div class="stat-row-bar-fg" style="width: ${pct}%"></div></div>
-                <div class="stat-row-val">${stats.correct}/${stats.total}</div>
-                <div class="stat-row-pct">${pct}%</div>
-            </div>
-        `;
-    });
-
-    const logFullContainer = document.getElementById("detail-log-full-container");
-    logFullContainer.innerHTML = "";
-    if (userLogs.length === 0) {
-        logFullContainer.innerHTML = `<p class="empty-log-text">履歴がありません。</p>`;
-    } else {
-        [...userLogs].reverse().forEach(log => {
-            const dateStr = new Date(log.date).toLocaleString('ja-JP');
-            const categoriesText = log.settings.categories && log.settings.categories.length > 0 
-                ? log.settings.categories.join(", ") 
-                : "全範囲";
-
-            logFullContainer.innerHTML += `
-                <div class="detailed-log-card">
-                    <div class="dl-header"><span>${dateStr}</span> <span class="dl-type">${log.settings.type} / ${log.settings.difficulty}</span></div>
-                    <div class="dl-row"><span class="dl-label">スコア</span><span class="dl-value">${log.score} / ${log.total} (${Math.floor(log.score/log.total*100)}%)</span></div>
-                    <div class="dl-row"><span class="dl-label">所要時間</span><span class="dl-value">${formatTime(log.time)}</span></div>
-                    <div class="dl-row"><span class="dl-label">出題範囲</span><span class="dl-value" style="font-size:0.7rem; text-align:right; width:65%; word-break: break-all;">${categoriesText}</span></div>
-                </div>
-            `;
-        });
-    }
-
-    if (!isTabClick) {
-        navigateTo("db-detail-screen");
-    }
-}
-
-function renderCategories(sortKey, forceReset = false) {
-    const container = document.getElementById("category-list-container");
-    const viewMode = document.querySelector("input[name='cat-view-mode']:checked").value;
-    const famControls = document.getElementById("family-selection-control");
-    
-    if (!container) return;
-    container.innerHTML = "";
-
-    famControls.style.display = "flex";
-
-    if (viewMode === "family") {
-        let sortedFamilies = [...familyMaster];
-        if (sortKey === "count_rank") sortedFamilies.sort((a,b) => b.count - a.count);
-        if (sortKey === "abc") sortedFamilies.sort((a,b) => a.name.localeCompare(b.name, 'ja'));
-        
-        sortedFamilies.forEach(fam => {
-            const label = document.createElement("label"); label.className = "category-check-label";
-            label.innerHTML = `<input type="checkbox" name="category" value="${fam.name}" class="category-check" ${forceReset ? "checked" : ""}> ${fam.name} <span class="cat-count">(${fam.count}種)</span>`;
-            container.appendChild(label);
-        });
-    } else if (viewMode === "order") {
-        let sortedOrders = [...orderMaster];
-        if (sortKey === "count_rank") sortedOrders.sort((a,b) => b.count - a.count);
-        if (sortKey === "abc") sortedOrders.sort((a,b) => a.name.localeCompare(b.name, 'ja'));
-        
-        sortedOrders.forEach(ord => {
-            const wrapper = document.createElement("div"); wrapper.className = "accordion-item";
-            const header = document.createElement("button"); header.className = "accordion-header";
-            header.innerHTML = `<span class="acc-title">${ord.name} <span style="font-size:0.8rem; font-weight:normal;">(${ord.count}種)</span></span><span class="acc-icon">▼</span>`;
-            
-            const body = document.createElement("div"); body.className = "accordion-body"; body.style.display = forceReset ? "block" : "none";
-            
-            const famList = document.createElement("div"); famList.className = "acc-fam-list";
-            let sortedFamOfOrd = familyMaster.filter(f => ord.families.includes(f.name));
-            if (sortKey === "count_rank") sortedFamOfOrd.sort((a,b) => b.count - a.count);
-            if (sortKey === "abc") sortedFamOfOrd.sort((a,b) => a.name.localeCompare(b.name, 'ja'));
-            
-            sortedFamOfOrd.forEach(fam => {
                 const label = document.createElement("label"); label.className = "category-check-label";
                 label.innerHTML = `<input type="checkbox" name="category" value="${fam.name}" class="category-check" ${forceReset ? "checked" : ""}> ${fam.name} <span class="cat-count">(${fam.count}種)</span>`;
                 famList.appendChild(label);
@@ -574,6 +371,11 @@ function renderCategories(sortKey, forceReset = false) {
                 body.style.display = isHidden ? "block" : "none";
                 header.querySelector(".acc-icon").textContent = isHidden ? "▲" : "▼";
             };
+            
+            // ★ 復活：各アコーディオン内の「すべて選択/解除」ボタンのイベント付与
+            ctrl.querySelector(".select-ord-all").onclick = (e) => { e.preventDefault(); famList.querySelectorAll(".category-check").forEach(cb => cb.checked = true); };
+            ctrl.querySelector(".deselect-ord-all").onclick = (e) => { e.preventDefault(); famList.querySelectorAll(".category-check").forEach(cb => cb.checked = false); };
+            
             wrapper.appendChild(header); wrapper.appendChild(body); container.appendChild(wrapper);
         });
     } else if (viewMode === "group") {
@@ -608,6 +410,11 @@ function renderCategories(sortKey, forceReset = false) {
             
             const body = document.createElement("div"); body.className = "accordion-body"; body.style.display = forceReset ? "block" : "none";
             
+            // ★ 復活：各アコーディオン内の「すべて選択/解除」ボタン
+            const ctrl = document.createElement("div"); ctrl.className = "accordion-controls";
+            ctrl.innerHTML = `<button type="button" class="btn btn-sm btn-outline select-ord-all">すべて選択</button> <button type="button" class="btn btn-sm btn-outline deselect-ord-all">すべて解除</button>`;
+            body.appendChild(ctrl);
+            
             const famList = document.createElement("div"); famList.className = "acc-fam-list";
             let sortedFamOfGrp = [...grp.families];
             if (sortKey === "count_rank") sortedFamOfGrp.sort((a,b) => b.count - a.count);
@@ -625,6 +432,11 @@ function renderCategories(sortKey, forceReset = false) {
                 body.style.display = isHidden ? "block" : "none";
                 header.querySelector(".acc-icon").textContent = isHidden ? "▲" : "▼";
             };
+            
+            // ★ 復活：各アコーディオン内の「すべて選択/解除」ボタンのイベント付与
+            ctrl.querySelector(".select-ord-all").onclick = (e) => { e.preventDefault(); famList.querySelectorAll(".category-check").forEach(cb => cb.checked = true); };
+            ctrl.querySelector(".deselect-ord-all").onclick = (e) => { e.preventDefault(); famList.querySelectorAll(".category-check").forEach(cb => cb.checked = false); };
+            
             wrapper.appendChild(header); wrapper.appendChild(body); container.appendChild(wrapper);
         });
     }
@@ -640,7 +452,6 @@ function renderCategories(sortKey, forceReset = false) {
     }
 }
 
-// ★ 追加・改修：HARDモードの高度なダミー抽出ロジック
 function generateQuizQuestions(targetFishes) {
     const difficulty = document.querySelector("input[name='quiz-difficulty']:checked").value;
     const quizType = document.querySelector("input[name='quiz-type']:checked").value;
@@ -773,7 +584,6 @@ function startQuiz() {
     navigateTo("quiz-screen"); renderQuestion();
 }
 
-// ★ 追加：同じ問題（ランダムにシャッフル）で再生成してスタートする
 function startQuizWithSameQuestions() {
     if (!lastQuizTargetFishes || lastQuizTargetFishes.length === 0) return;
     
@@ -1007,7 +817,7 @@ function showResult() {
             
             <div class="card-actions" style="margin-top: 8px; border-top: 1px dashed var(--border-color); padding-top: 8px; display: flex; justify-content: space-between; align-items: center;">
                 <label class="no-confidence-label" style="font-size: 0.8rem; color: var(--warning-color); cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                    <input type="checkbox" class="res-conf-check" data-id="${h.correctFish.id}" ${isWrong ? 'checked' : ''} style="transform: scale(1.1);"> 🤔 復習に入れる
+                    <input type="checkbox" class="res-conf-check" data-id="${h.correctFish.id}" ${isWrong ? 'checked' : ''} style="transform: scale(1.1);"> 🤔 自信なし
                 </label>
                 <div style="display: flex; gap: 16px; align-items: center;">
                     <button class="btn-fav res-fav-btn ${isFav ? 'active' : ''}" data-id="${h.correctFish.id}" style="position: static; font-size: 1.4rem; background: none; border: none; box-shadow: none; padding: 0; width: auto; height: auto;">${isFav ? '★' : '☆'}</button>
